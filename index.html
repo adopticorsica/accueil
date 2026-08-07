@@ -41,24 +41,48 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
   <!-- Données structurées Schema.org -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Adopti Corsica",
-    "url": "https://adopticorsica.github.io/accueil/",
-    "description": "Plateforme recensant les animaux à l'adoption des associations de protection animale de la région d'Ajaccio et de Corse-du-Sud.",
-    "inLanguage": "fr-FR",
-    "about": {
-      "@type": "Thing",
-      "name": "Adoption d'animaux de compagnie en Corse"
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://adopticorsica.github.io/accueil/#website",
+      "name": "Adopti Corsica",
+      "url": "https://adopticorsica.github.io/accueil/",
+      "description": "Plateforme recensant les animaux à l'adoption des associations de protection animale de la région d'Ajaccio et de Corse-du-Sud.",
+      "inLanguage": "fr-FR",
+      "about": {
+        "@type": "Thing",
+        "name": "Adoption d'animaux de compagnie en Corse"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Ajaccio, Corse-du-Sud, Corse"
+      },
+      "publisher": { "@id": "https://adopticorsica.github.io/accueil/#organization" }
     },
-    "areaServed": {
-      "@type": "Place",
-      "name": "Ajaccio, Corse-du-Sud, Corse"
+    {
+      "@type": "Organization",
+      "@id": "https://adopticorsica.github.io/accueil/#organization",
+      "name": "Adopti Corsica",
+      "alternateName": "Adopti Corsica – Adoption de chiens et chats à Ajaccio et en Corse-du-Sud",
+      "url": "https://adopticorsica.github.io/accueil/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://adopticorsica.github.io/accueil/adopti_corsica_logo_square.png"
+      },
+      "image": "https://adopticorsica.github.io/accueil/og-image.jpg",
+      "email": "adopti.corsica@gmail.com",
+      "areaServed": {
+        "@type": "Place",
+        "name": "Ajaccio, Corse-du-Sud, Corse"
+      },
+      "sameAs": []
     }
-  }
-  </script>
+  ]
+}
+</script>
 
   <style>
 :root{
