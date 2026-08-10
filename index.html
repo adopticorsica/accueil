@@ -1421,7 +1421,7 @@ const assos = [
 ];
 
 let lang='fr';
-let visible=6;
+let visible=12;
 let urgentOnly=false;
 
 function t(k){return (i18n[lang] && i18n[lang][k]) || k;}
@@ -1438,6 +1438,12 @@ function formatCompatText(html){
   return html.replace(/(🐶|🐱)(\s*:\s*)([^<]*)/g, function(full, emoji, sep, value){
     return emoji + sep + renderCompatIcon(value);
   });
+}
+function shortInfo(html){
+  if(!html) return '';
+  const idx = html.indexOf('<br><br>');
+  const head = idx !== -1 ? html.slice(0, idx) : html;
+  return formatCompatText(head);
 }
 
 function buildFilters(){
@@ -1464,7 +1470,7 @@ function animalCard(a){
       <span class="tag">${lang==='fr' ? a.race_fr : a.race_co}</span>
       ${a.fiv ? '<span class="tag">FIV/FeLV</span>' : ''}
     </div>
-    <div class="animal-desc">${formatCompatText(lang==='fr' ? a.desc_fr : a.desc_co)}</div>
+    <div class="animal-desc">${shortInfo(lang==='fr' ? a.desc_fr : a.desc_co)}</div>
     <div class="animal-bottom">
       <span class="loc">📍 ${a.area}</span>
       <button class="mini-btn" onclick="event.stopPropagation();openModal('${escapedName}')">${t('animal.view')}</button>
@@ -1486,7 +1492,7 @@ function renderAnimals(list){
   const sorted = sortByPriority(list);
   const showMore = document.getElementById('showMoreBtn');
   document.getElementById('animalsGrid').innerHTML = sorted.slice(0, visible).map(animalCard).join('');
-  if(showMore) showMore.style.display = (list.length > 6 && visible <= 6) ? 'inline-block' : 'none';
+  if(showMore) showMore.style.display = (list.length > 6 && visible <= 12) ? 'inline-block' : 'none';
 }
 function showAllAnimals(){
   visible = 9999;
@@ -1574,7 +1580,7 @@ function resetAllFilters(){
   document.getElementById('filterArea').value = '';
   document.getElementById('filterAssociation').value = '';
   urgentOnly = false;
-  visible = 6;
+  visible = 12;
   filterAnimals();
 }
 
