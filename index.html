@@ -140,7 +140,7 @@
                 <select class="select" id="filterAge" onchange="filterAnimals()"></select>
                 <select class="select" id="filterGender" onchange="filterAnimals()"></select>
                 <select class="select" id="filterArea" onchange="filterAnimals()"></select>
-                <select class="select" id="filterAssociation" onchange="filterAnimals()"></select>
+                <select class="select" id="filterAssociation" onchange="filterAnimals();syncAssoUrl();"></select>
               </div>
             </div>
           </div>
@@ -910,6 +910,7 @@ asso:'Les Chats de l\'Île'},
 const assos = [
   {
     "name": "S.C.D.A. - Refuge Caldaniccia",
+    "slug": "refugedecaldaniccia",
     "icon": "🐶",
     "loc": "Ajaccio",
     "type": "Association loi 1901",
@@ -923,6 +924,7 @@ const assos = [
   },
   {
     "name": "L'Arche des Animaux",
+    "slug": "archedesanimaux",
     "icon": "🐱",
     "loc": "Ajaccio",
     "type": "Association loi 1901",
@@ -936,6 +938,7 @@ const assos = [
   },
   {
     "name": "Des Z'amours de Chats",
+    "slug": "zamoursdechats",
     "icon": "🐱",
     "loc": "Ajaccio",
     "type": "Association loi 1901",
@@ -950,6 +953,7 @@ const assos = [
   },
   {
     "name": "Les Chats de l'Île",
+    "slug": "chatsdelile",
     "icon": "🐱",
     "loc": "Ajaccio",
     "distance": "0 km",
@@ -965,6 +969,7 @@ const assos = [
   },
   {
     "name": "Les Sans Colliers de Corse",
+    "slug": "sanscolliersdecorse",
     "icon": "🐱",
     "loc": "Ajaccio",
     "distance": "~15 km",
@@ -1148,6 +1153,36 @@ function resetAllFilters(){
   urgentOnly = false;
   visible = 12;
   filterAnimals();
+  history.replaceState(null, '', '/accueil/');
+}
+
+// --- URL propre par association (ex: /accueil/refugedecaldaniccia) ---
+// Applique le filtre association correspondant à un slug donné. Retourne true si trouvé.
+function applyAssoFilterBySlug(slug){
+  const asso = assos.find(x => x.slug === slug);
+  if(!asso) return false;
+  document.getElementById('filterAssociation').value = asso.name;
+  filterAnimals();
+  return true;
+}
+// Met à jour l'URL affichée dans la barre d'adresse quand l'utilisateur change le filtre à la main,
+// sans recharger la page (history.replaceState), pour que l'URL reste partageable.
+function syncAssoUrl(){
+  const currentName = document.getElementById('filterAssociation').value;
+  const asso = assos.find(x => x.name === currentName);
+  const newPath = asso && asso.slug ? '/accueil/' + asso.slug : '/accueil/';
+  if(location.pathname !== newPath) history.replaceState(null, '', newPath);
+}
+// Au chargement : si le 404.html a mémorisé un slug d'association demandé, on l'applique
+// puis on restaure l'URL propre dans la barre d'adresse (le contenu, lui, est déjà celui de l'accueil).
+function applyPendingAssoRedirect(){
+  const slug = sessionStorage.getItem('assoRedirect');
+  if(!slug) return;
+  sessionStorage.removeItem('assoRedirect');
+  if(applyAssoFilterBySlug(slug)){
+    history.replaceState(null, '', '/accueil/' + slug);
+    document.getElementById('animaux').scrollIntoView({block:'start'});
+  }
 }
 
 
@@ -1205,6 +1240,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSteps();
   updateActionButtons();
   document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
+  applyPendingAssoRedirect();
 });
 
 </script>

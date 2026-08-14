@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirection… – Adopti Corsica</title>
+  <meta name="robots" content="noindex" />
+  <script>
+    // Ce fichier est servi automatiquement par GitHub Pages pour toute URL qui ne
+    // correspond à aucun fichier réel (ex: /accueil/refugedecaldaniccia).
+    // On récupère le dernier segment de l'URL (le "slug" d'association), on le
+    // mémorise, puis on redirige vers la vraie page d'accueil qui appliquera le filtre
+    // correspondant et restaurera cette URL propre dans la barre d'adresse.
+    var match = window.location.pathname.match(/\/accueil\/([^\/]+)\/?$/);
+    if (match && match[1]) {
+      sessionStorage.setItem('assoRedirect', decodeURIComponent(match[1]));
+    }
+    window.location.replace('/accueil/');
+  </script>
+</head>
+<body>
+  <p>Redirection en cours… <a href="/accueil/">Cliquez ici si vous n'êtes pas redirigé automatiquement.</a></p>
+</body>
+</html>
