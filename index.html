@@ -1153,34 +1153,51 @@ function resetAllFilters(){
   urgentOnly = false;
   visible = 12;
   filterAnimals();
-  history.replaceState(null, '', '/accueil/');
+  const cleanPath = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+  history.replaceState(null, '', cleanPath);
 }
 
-// --- URL propre par association (ex: /accueil/refugedecaldaniccia) ---
-// Applique le filtre association correspondant à un slug donné. Retourne true si trouvé.
+// --- Filtre association via parametre d'URL ---
+// Format recommande pour le partage : /accueil/?asso=refugedecaldaniccia
+// Ce format evite les erreurs 404 avec GitHub Pages et les robots Facebook.
 function applyAssoFilterBySlug(slug){
-  const asso = assos.find(x => x.slug === slug);
+  if(!slug) return false;
+  const normalizedSlug = decodeURIComponent(slug).trim().toLowerCase();
+  const asso = assos.find(x => x.slug === normalizedSlug);
   if(!asso) return false;
   document.getElementById('filterAssociation').value = asso.name;
   filterAnimals();
   return true;
 }
-// Met à jour l'URL affichée dans la barre d'adresse quand l'utilisateur change le filtre à la main,
-// sans recharger la page (history.replaceState), pour que l'URL reste partageable.
+
+// Met a jour l'URL affichee quand l'utilisateur change le filtre Association,
+// sans recharger la page. L'URL reste donc partageable sur Facebook : ?asso=slug.
 function syncAssoUrl(){
   const currentName = document.getElementById('filterAssociation').value;
   const asso = assos.find(x => x.name === currentName);
-  const newPath = asso && asso.slug ? '/accueil/' + asso.slug : '/accueil/';
-  if(location.pathname !== newPath) history.replaceState(null, '', newPath);
+  const url = new URL(window.location.href);
+  if(asso && asso.slug){
+    url.searchParams.set('asso', asso.slug);
+  } else {
+    url.searchParams.delete('asso');
+  }
+  url.hash = '';
+  history.replaceState(null, '', url.pathname + url.search);
 }
-// Au chargement : si le 404.html a mémorisé un slug d'association demandé, on l'applique
-// puis on restaure l'URL propre dans la barre d'adresse (le contenu, lui, est déjà celui de l'accueil).
-function applyPendingAssoRedirect(){
-  const slug = sessionStorage.getItem('assoRedirect');
+
+// Au chargement : applique le filtre si l'URL contient ?asso=slug.
+// On conserve aussi une compatibilite avec l'ancien 404.html, au cas ou un ancien lien circule encore.
+function applyAssoFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const slugFromQuery = params.get('asso');
+  const slugFromLegacy404 = sessionStorage.getItem('assoRedirect');
+  if(slugFromLegacy404) sessionStorage.removeItem('assoRedirect');
+  const slug = slugFromQuery || slugFromLegacy404;
   if(!slug) return;
-  sessionStorage.removeItem('assoRedirect');
   if(applyAssoFilterBySlug(slug)){
-    history.replaceState(null, '', '/accueil/' + slug);
+    const url = new URL(window.location.href);
+    url.searchParams.set('asso', decodeURIComponent(slug).trim().toLowerCase());
+    history.replaceState(null, '', url.pathname + url.search);
     document.getElementById('animaux').scrollIntoView({block:'start'});
   }
 }
@@ -1240,7 +1257,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSteps();
   updateActionButtons();
   document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
-  applyPendingAssoRedirect();
+  applyAssoFromUrl();
 });
 
 </script>
